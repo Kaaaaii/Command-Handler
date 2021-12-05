@@ -1,0 +1,17 @@
+{
+  "name": "ts-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "ts-node-dev --respawn --poll ./tests/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/builders": "^0.9.0",
+    "colors": "^1.4.0",
+    "discord.js": "^13.3.1"
+  }
+}
