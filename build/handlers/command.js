@@ -60,7 +60,8 @@ class CommandHandler {
                     if (command.global)
                         commandBase.addSubcommand(() => command.getBuilder());
                 }
-                this.slash.push(commandBase.toJSON());
+                if (commandBase.options.length > 0)
+                    this.slash.push(commandBase.toJSON());
             }
             else {
                 var command = new (await Promise.resolve().then(() => __importStar(require((0, path_1.join)(require.main.path, dir + '/' + dirfile))))).default;
