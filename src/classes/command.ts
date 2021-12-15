@@ -20,7 +20,7 @@ export default class Command {
     constructor(options: CommandOptions) {
         this.name = options.name
         this.description = options.description
-        this.global = options.global || true
+        this.global = options.global
         this.metadata = options.metadata || {}
     }
 

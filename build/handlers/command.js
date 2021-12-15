@@ -57,10 +57,10 @@ class CommandHandler {
                     command_dir.shift();
                     var command_dir = command_dir.join('|');
                     this.commands.set(command_dir, command);
-                    commandBase.addSubcommand(() => command.getBuilder());
+                    if (command.global)
+                        commandBase.addSubcommand(() => command.getBuilder());
                 }
-                if (command.global)
-                    this.slash.push(commandBase.toJSON());
+                this.slash.push(commandBase.toJSON());
             }
             else {
                 var command = new (await Promise.resolve().then(() => __importStar(require((0, path_1.join)(require.main.path, dir + '/' + dirfile))))).default;

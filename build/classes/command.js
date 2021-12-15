@@ -6,7 +6,7 @@ class Command {
     constructor(options) {
         this.name = options.name;
         this.description = options.description;
-        this.global = options.global || true;
+        this.global = options.global;
         this.metadata = options.metadata || {};
     }
     getSubCommand() {
