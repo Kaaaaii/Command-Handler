@@ -21,7 +21,6 @@ class MenuHandler {
     }
 
     private async scanDir(dir: string) {
-        console.log(join(require.main.path, dir))
         var directory = readdirSync(join(require.main.path, dir))
         for (const dirfile of directory) {
             var menu: Menu = new (await import(join(require.main.path, dir + '/' + dirfile))).default

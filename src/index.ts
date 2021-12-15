@@ -10,6 +10,7 @@ interface ToolConfig {
     events_path?: string;
     create_commands?: boolean;
     test_guild?: string;
+    debug?: boolean;
 }
 
 class DiscordClient extends Client {
@@ -20,6 +21,9 @@ class DiscordClient extends Client {
     public events_path: string;
     public create_commands: boolean;
     public test_guild: string;
+    public debug: boolean;
+
+    public command_handler: CommandHandler
 
     constructor(options: ClientOptions, tools?: ToolConfig) {
         super(options);
@@ -29,11 +33,13 @@ class DiscordClient extends Client {
         this.events_path = tools.events_path;
         this.create_commands = tools.create_commands;
         this.test_guild = tools.test_guild;
+        this.debug = tools.debug || false;
         this.loggers()
 
-        new CommandHandler(this)
+        this.command_handler = new CommandHandler(this)
         new ButtonHandler(this)
         new MenuHandler(this)
+        new EventHandler(this)
     }
 
     private loggers() {
@@ -58,12 +64,19 @@ class DiscordClient extends Client {
     public success(message?: any, ...optionalParams: any[]) {
         console.log(colors.green('[SUCCESS] ') + message, ...optionalParams);
     }
+
+    public logdeBug(message?: any, ...optionalParams: any[]) {
+        console.log(colors.gray('[DEBUG] ') + message, ...optionalParams);
+    }
 }
 
 import { Command } from './classes/command';
 import { Button } from './classes/button';
 import { Menu } from './classes/menu'
+import { Event } from './classes/event'
+
 import { ButtonHandler } from './handlers/button';
 import { MenuHandler } from './handlers/menu';
+import { EventHandler } from './handlers/events';
 
-export { DiscordClient, Command, Button, Menu };
+export { DiscordClient, Command, Button, Menu, Event };

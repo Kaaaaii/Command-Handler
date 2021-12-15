@@ -21,7 +21,6 @@ class ButtonHandler {
     }
 
     private async scanDir(dir: string) {
-        console.log(join(require.main.path, dir))
         var directory = readdirSync(join(require.main.path, dir))
         for (const dirfile of directory) {
             var button: Button = new (await import(join(require.main.path, dir + '/' + dirfile))).default
@@ -33,7 +32,6 @@ class ButtonHandler {
         this.client.on('interactionCreate', (interaction) => {
             if (interaction.isButton()) {
                 var interactionData = JSON.parse(interaction.customId)
-                console.log(interactionData)
                 this.buttons.get(interactionData.i)
                     .execute(interaction, interactionData.d)
             }

@@ -10,6 +10,8 @@ class CommandHandler {
     private client: DiscordClient;
     private commands: Collection<string, any> = new Collection();
     private slash: Array<any> = [];
+    private privateSlash: Array<any> = [];
+    private beforeCommandData: Function;
 
     constructor(client: DiscordClient) {
         this.client = client;
@@ -37,14 +39,39 @@ class CommandHandler {
                     this.commands.set(command_dir, command)
                     commandBase.addSubcommand(() => command.getBuilder() as any)
                 }
-                this.slash.push(commandBase.toJSON())
+                if(command.global) this.slash.push(commandBase.toJSON())
             } else {
                 var command: Command = new (await import(join(require.main.path, dir + '/' + dirfile))).default
                 var command_dir: any = (dir.split(process.env.COMMANDS_PATH)[1] + '/' + command.name).replace(/\//g, '|').split('|'); command_dir.shift(); var command_dir = command_dir.join('|')
                 this.commands.set(command_dir, command)
-                this.slash.push(command.getBuilder().toJSON())
+                if(command.global) this.slash.push(command.getBuilder().toJSON())
             }
         }
+    }
+
+    private async scanDirPrivate(data: Object) {
+        var commands: any[] = []
+        var command_dir: any;
+        var dir: any = this.client.command_path
+        var directory = readdirSync(join(require.main.path, dir))
+        for (const dirfile of directory) {
+            if (lstatSync(join(require.main.path, dir + '/' + dirfile)).isDirectory()) {
+                var commandBase = new SlashCommandBuilder().setName(dirfile.split('.js')[0]).setDescription(' ')
+                for (const dirfile2 of readdirSync(join(require.main.path, dir + '/' + dirfile))) {
+                    var command: Command = new (await import(join(require.main.path, dir + '/' + dirfile + '/' + dirfile2))).default
+                    var command_dir: any = (dir.split(process.env.COMMANDS_PATH)[1] + '/' + dirfile + '/' + command.name).replace(/\//g, '|').split('|'); command_dir.shift(); var command_dir = command_dir.join('|')
+                    this.commands.set(command_dir, command)
+                    commandBase.addSubcommand(() => command.getBuilder(data) as any)
+                }
+                commands.push(commandBase.toJSON())
+            } else {
+                var command: Command = new (await import(join(require.main.path, dir + '/' + dirfile))).default
+                var command_dir: any = (dir.split(process.env.COMMANDS_PATH)[1] + '/' + command.name).replace(/\//g, '|').split('|'); command_dir.shift(); var command_dir = command_dir.join('|')
+                this.commands.set(command_dir, command)
+                commands.push(command.getBuilder(data).toJSON())
+            }
+        }
+        return commands
     }
 
     private async setCommands(guild_id?: string) {
@@ -65,9 +92,24 @@ class CommandHandler {
                         var command = this.commands.get(interaction.commandName)
                         break;
                 }
-                command.execute(interaction)
+                if(this.beforeCommandData) {
+                    if(this.beforeCommandData(interaction)) {
+                        command.execute(interaction)
+                    }
+                } else {
+                    command.execute(interaction)
+                }
             }
         })
+    }
+
+    public async registerCommands(guild_id: string, data: Object) {
+        var commands = await this.scanDirPrivate(data)
+        this.client.application.commands.set(commands, guild_id)
+    }
+
+    public beforeCommand(data: Function) {
+        this.beforeCommandData = data
     }
 }
 

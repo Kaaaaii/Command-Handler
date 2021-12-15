@@ -4,17 +4,20 @@ import { DiscordClient } from ".."
 
 interface CommandOptions {
     name: string
-    description: string
+    description: string,
+    global?: boolean
 }
 
 export default class Command {
 
     public name: string
     public description: string
+    public global: boolean
 
     constructor(options: CommandOptions) {
         this.name = options.name
         this.description = options.description
+        this.global = options.global || true
     }
 
     protected getSubCommand(): SlashCommandSubcommandBuilder {
