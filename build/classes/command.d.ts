@@ -4,11 +4,13 @@ interface CommandOptions {
     name: string;
     description: string;
     global?: boolean;
+    metadata?: object;
 }
 export default class Command {
     name: string;
     description: string;
     global: boolean;
+    metadata: object;
     constructor(options: CommandOptions);
     protected getSubCommand(): SlashCommandSubcommandBuilder;
     protected getCommand(): SlashCommandBuilder;

@@ -7,6 +7,7 @@ class Command {
         this.name = options.name;
         this.description = options.description;
         this.global = options.global || true;
+        this.metadata = options.metadata || {};
     }
     getSubCommand() {
         return new builders_1.SlashCommandSubcommandBuilder()
