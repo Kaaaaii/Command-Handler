@@ -37,9 +37,9 @@ class CommandHandler {
                     var command: Command = new (await import(join(require.main.path, dir + '/' + dirfile + '/' + dirfile2))).default
                     var command_dir: any = (dir.split(process.env.COMMANDS_PATH)[1] + '/' + dirfile + '/' + command.name).replace(/\//g, '|').split('|'); command_dir.shift(); var command_dir = command_dir.join('|')
                     this.commands.set(command_dir, command)
-                    commandBase.addSubcommand(() => command.getBuilder() as any)
+                    if(command.global) commandBase.addSubcommand(() => command.getBuilder() as any)
                 }
-                if(command.global) this.slash.push(commandBase.toJSON())
+                this.slash.push(commandBase.toJSON())
             } else {
                 var command: Command = new (await import(join(require.main.path, dir + '/' + dirfile))).default
                 var command_dir: any = (dir.split(process.env.COMMANDS_PATH)[1] + '/' + command.name).replace(/\//g, '|').split('|'); command_dir.shift(); var command_dir = command_dir.join('|')
