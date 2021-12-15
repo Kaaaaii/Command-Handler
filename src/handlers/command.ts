@@ -39,7 +39,7 @@ class CommandHandler {
                     this.commands.set(command_dir, command)
                     if(command.global) commandBase.addSubcommand(() => command.getBuilder() as any)
                 }
-                this.slash.push(commandBase.toJSON())
+                if(commandBase.options.length > 0) this.slash.push(commandBase.toJSON())
             } else {
                 var command: Command = new (await import(join(require.main.path, dir + '/' + dirfile))).default
                 var command_dir: any = (dir.split(process.env.COMMANDS_PATH)[1] + '/' + command.name).replace(/\//g, '|').split('|'); command_dir.shift(); var command_dir = command_dir.join('|')
