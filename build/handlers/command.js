@@ -111,12 +111,15 @@ class CommandHandler {
                 switch (interaction.options.data[0]?.type) {
                     case 'SUB_COMMAND':
                         var command = this.commands.get(interaction.commandName + '|' + interaction.options.getSubcommand());
+                        command.id = interaction.commandName + '|' + interaction.options.getSubcommand();
                         break;
                     case 'SUB_COMMAND_GROUP':
                         var command = this.commands.get(interaction.options.getSubcommand() + '|' + interaction.options.getSubcommandGroup() + '|' + interaction.commandName);
+                        command.id = interaction.options.getSubcommand() + '|' + interaction.options.getSubcommandGroup() + '|' + interaction.commandName;
                         break;
                     default:
                         var command = this.commands.get(interaction.commandName);
+                        command.id = interaction.commandName;
                         break;
                 }
                 if (!command)

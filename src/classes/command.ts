@@ -15,6 +15,7 @@ export default class Command {
     public description: string
     public global: boolean
     public metadata: object
+    public id: string
 
     constructor(options: CommandOptions) {
         this.name = options.name

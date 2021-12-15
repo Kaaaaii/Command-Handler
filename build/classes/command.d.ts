@@ -11,6 +11,7 @@ export default class Command {
     description: string;
     global: boolean;
     metadata: object;
+    id: string;
     constructor(options: CommandOptions);
     protected getSubCommand(): SlashCommandSubcommandBuilder;
     protected getCommand(): SlashCommandBuilder;
