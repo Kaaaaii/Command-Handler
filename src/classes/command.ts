@@ -5,7 +5,8 @@ import { DiscordClient } from ".."
 interface CommandOptions {
     name: string
     description: string,
-    global?: boolean
+    global?: boolean,
+    metadata?: object
 }
 
 export default class Command {
@@ -13,11 +14,13 @@ export default class Command {
     public name: string
     public description: string
     public global: boolean
+    public metadata: object
 
     constructor(options: CommandOptions) {
         this.name = options.name
         this.description = options.description
         this.global = options.global || true
+        this.metadata = options.metadata || {}
     }
 
     protected getSubCommand(): SlashCommandSubcommandBuilder {

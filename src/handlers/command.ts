@@ -79,7 +79,7 @@ class CommandHandler {
     }
 
     private async listenCommands() {
-        this.client.on('interactionCreate', (interaction) => {
+        this.client.on('interactionCreate', async(interaction) => {
             if (interaction.isCommand()) {
                 switch (interaction.options.data[0]?.type) {
                     case 'SUB_COMMAND':
@@ -92,8 +92,9 @@ class CommandHandler {
                         var command = this.commands.get(interaction.commandName)
                         break;
                 }
+                if(!command) return this.client.error('Command Could not be found!')
                 if(this.beforeCommandData) {
-                    if(this.beforeCommandData(interaction)) {
+                    if(await this.beforeCommandData(interaction, command)) {
                         command.execute(interaction)
                     }
                 } else {

@@ -6,7 +6,10 @@ export default class extends Command {
         super({
             name: "ping",
             description: "Ping, pong",
-            global: true
+            global: true,
+            metadata: {
+                needs_permission: true
+            }
         })
     }
 
