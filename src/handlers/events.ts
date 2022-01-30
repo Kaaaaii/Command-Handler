@@ -27,6 +27,11 @@ class EventHandler {
             this.client.on(event.event, (...args) => event.execute(...args))
         }
     }
+
+    private async createEvent(dir, file) {
+        var event: Event = new (await import(join(require.main.path, dir + '/' + file))).default
+        this.client.on(event.event, (...args) => event.execute(...args))
+    }
 }
 
 export { EventHandler }
