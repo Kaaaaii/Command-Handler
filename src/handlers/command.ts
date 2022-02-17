@@ -32,7 +32,7 @@ class CommandHandler {
         var directory = readdirSync(join(require.main.path, dir))
         for (const dirfile of directory) {
             if (lstatSync(join(require.main.path, dir + '/' + dirfile)).isDirectory()) {
-                var commandBase = new SlashCommandBuilder().setName(dirfile.split('.js')[0]).setDescription(' ')
+                var commandBase = new SlashCommandBuilder().setName(dirfile.split('.js')[0]).setDescription('Default Description')
                 for (const dirfile2 of readdirSync(join(require.main.path, dir + '/' + dirfile))) {
                     var command: Command = new (await import(join(require.main.path, dir + '/' + dirfile + '/' + dirfile2))).default
                     var command_dir: any = (dir.split(process.env.COMMANDS_PATH)[1] + '/' + dirfile + '/' + command.name).replace(/\//g, '|').split('|'); command_dir.shift(); var command_dir = command_dir.join('|')
@@ -56,7 +56,7 @@ class CommandHandler {
         var directory = readdirSync(join(require.main.path, dir))
         for (const dirfile of directory) {
             if (lstatSync(join(require.main.path, dir + '/' + dirfile)).isDirectory()) {
-                var commandBase = new SlashCommandBuilder().setName(dirfile.split('.js')[0]).setDescription(' ')
+                var commandBase = new SlashCommandBuilder().setName(dirfile.split('.js')[0]).setDescription('Default Description')
                 for (const dirfile2 of readdirSync(join(require.main.path, dir + '/' + dirfile))) {
                     var command: Command = new (await import(join(require.main.path, dir + '/' + dirfile + '/' + dirfile2))).default
                     var command_dir: any = (dir.split(process.env.COMMANDS_PATH)[1] + '/' + dirfile + '/' + command.name).replace(/\//g, '|').split('|'); command_dir.shift(); var command_dir = command_dir.join('|')
