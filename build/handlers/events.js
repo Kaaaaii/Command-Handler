@@ -40,9 +40,12 @@ class EventHandler {
     async scanDir(dir) {
         var directory = (0, fs_1.readdirSync)((0, path_1.join)(require.main.path, dir));
         for (const dirfile of directory) {
-            var event = new (await Promise.resolve().then(() => __importStar(require((0, path_1.join)(require.main.path, dir + '/' + dirfile))))).default;
-            this.client.on(event.event, (...args) => event.execute(...args));
+            this.createEvent(dir, dirfile);
         }
+    }
+    async createEvent(dir, file) {
+        var event = new (await Promise.resolve().then(() => __importStar(require((0, path_1.join)(require.main.path, dir + '/' + file))))).default;
+        this.client.on(event.event, (...args) => event.execute(...args));
     }
 }
 exports.EventHandler = EventHandler;

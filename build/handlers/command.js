@@ -50,7 +50,7 @@ class CommandHandler {
         var directory = (0, fs_1.readdirSync)((0, path_1.join)(require.main.path, dir));
         for (const dirfile of directory) {
             if ((0, fs_1.lstatSync)((0, path_1.join)(require.main.path, dir + '/' + dirfile)).isDirectory()) {
-                var commandBase = new builders_1.SlashCommandBuilder().setName(dirfile.split('.js')[0]).setDescription(' ');
+                var commandBase = new builders_1.SlashCommandBuilder().setName(dirfile.split('.js')[0]).setDescription('Default Description');
                 for (const dirfile2 of (0, fs_1.readdirSync)((0, path_1.join)(require.main.path, dir + '/' + dirfile))) {
                     var command = new (await Promise.resolve().then(() => __importStar(require((0, path_1.join)(require.main.path, dir + '/' + dirfile + '/' + dirfile2))))).default;
                     var command_dir = (dir.split(process.env.COMMANDS_PATH)[1] + '/' + dirfile + '/' + command.name).replace(/\//g, '|').split('|');
@@ -81,7 +81,7 @@ class CommandHandler {
         var directory = (0, fs_1.readdirSync)((0, path_1.join)(require.main.path, dir));
         for (const dirfile of directory) {
             if ((0, fs_1.lstatSync)((0, path_1.join)(require.main.path, dir + '/' + dirfile)).isDirectory()) {
-                var commandBase = new builders_1.SlashCommandBuilder().setName(dirfile.split('.js')[0]).setDescription(' ');
+                var commandBase = new builders_1.SlashCommandBuilder().setName(dirfile.split('.js')[0]).setDescription('Default Description');
                 for (const dirfile2 of (0, fs_1.readdirSync)((0, path_1.join)(require.main.path, dir + '/' + dirfile))) {
                     var command = new (await Promise.resolve().then(() => __importStar(require((0, path_1.join)(require.main.path, dir + '/' + dirfile + '/' + dirfile2))))).default;
                     var command_dir = (dir.split(process.env.COMMANDS_PATH)[1] + '/' + dirfile + '/' + command.name).replace(/\//g, '|').split('|');

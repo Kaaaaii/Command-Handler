@@ -3,14 +3,13 @@ import { lstatSync, readdirSync } from 'fs';
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { DiscordClient } from '..';
 import { Command } from '../classes/command'
-import Collection from '@discordjs/collection';
+import { CommandInteraction } from 'discord.js';
 
 class CommandHandler {
 
     private client: DiscordClient;
-    private commands: Collection<string, any> = new Collection();
+    private commands: Map<string, Command> = new Map();
     private slash: Array<any> = [];
-    private privateSlash: Array<any> = [];
     private beforeCommandData: Function;
 
     constructor(client: DiscordClient) {
@@ -18,8 +17,7 @@ class CommandHandler {
         if (!this.client.command_path) return
         this.loadCommands().then(() => {
             this.listenCommands()
-            if (!this.client.create_commands) return
-            this.client.once('ready', () => this.setCommands(this.client.test_guild))
+            if (this.client.create_commands) this.client.once('ready', () => this.setCommands(this.client.test_guild))
         })
     }
 
@@ -37,14 +35,14 @@ class CommandHandler {
                     var command: Command = new (await import(join(require.main.path, dir + '/' + dirfile + '/' + dirfile2))).default
                     var command_dir: any = (dir.split(process.env.COMMANDS_PATH)[1] + '/' + dirfile + '/' + command.name).replace(/\//g, '|').split('|'); command_dir.shift(); var command_dir = command_dir.join('|')
                     this.commands.set(command_dir, command)
-                    if(command.global) commandBase.addSubcommand(() => command.getBuilder() as any)
+                    if (command.global) commandBase.addSubcommand(() => command.getBuilder() as any)
                 }
-                if(commandBase.options.length > 0) this.slash.push(commandBase.toJSON())
+                if (commandBase.options.length > 0) this.slash.push(commandBase.toJSON())
             } else {
                 var command: Command = new (await import(join(require.main.path, dir + '/' + dirfile))).default
                 var command_dir: any = (dir.split(process.env.COMMANDS_PATH)[1] + '/' + command.name).replace(/\//g, '|').split('|'); command_dir.shift(); var command_dir = command_dir.join('|')
                 this.commands.set(command_dir, command)
-                if(command.global) this.slash.push(command.getBuilder().toJSON())
+                if (command.global) this.slash.push(command.getBuilder().toJSON())
             }
         }
     }
@@ -78,42 +76,41 @@ class CommandHandler {
         this.client.application.commands.set(this.slash, guild_id)
     }
 
-    private async listenCommands() {
-        this.client.on('interactionCreate', async(interaction) => {
-            if (interaction.isCommand()) {
-                switch (interaction.options.data[0]?.type) {
-                    case 'SUB_COMMAND':
-                        var command = this.commands.get(interaction.commandName + '|' + interaction.options.getSubcommand())
-                        command.id = interaction.commandName + '|' + interaction.options.getSubcommand()
-                        break;
-                    case 'SUB_COMMAND_GROUP':
-                        var command = this.commands.get(interaction.options.getSubcommand() + '|' + interaction.options.getSubcommandGroup() + '|' + interaction.commandName)
-                        command.id = interaction.options.getSubcommand() + '|' + interaction.options.getSubcommandGroup() + '|' + interaction.commandName
-                        break;
-                    default:
-                        var command = this.commands.get(interaction.commandName)
-                        command.id = interaction.commandName
-                        break;
-                }
-                if(!command) return this.client.error('Command Could not be found!')
-                if(this.beforeCommandData) {
-                    if(await this.beforeCommandData(interaction, command)) {
-                        command.execute(interaction)
-                    }
-                } else {
-                    command.execute(interaction)
-                }
-            }
-        })
-    }
-
     public async registerCommands(guild_id: string, data: Object) {
         var commands = await this.scanDirPrivate(data)
         this.client.application.commands.set(commands, guild_id)
     }
 
-    public beforeCommand(data: Function) {
-        this.beforeCommandData = data
+    private async listenCommands() {
+        this.client.on('interactionCreate', async (interaction) => {
+            if (interaction.isCommand()) {
+                switch (interaction.options.data[0]?.type) {
+                    case 'SUB_COMMAND':
+                        var command = `command|${interaction.commandName}|${interaction.options.getSubcommand()}`
+                        break;
+                    case 'SUB_COMMAND_GROUP':
+                        var command = `command|${interaction.options.getSubcommand()}|${interaction.options.getSubcommandGroup()}|${interaction.commandName}`
+                        break;
+                    default:
+                        var command = `command|${interaction.commandName}`
+                        break;
+                }
+
+                if (!command) return interaction.reply({ content: this.client.messages.command_not_found })
+                var class_command = this.commands.get(command)
+
+                if (!this.checkPermissions(class_command, interaction)) return interaction.reply({ content: this.client.messages.invalid_permissions })
+
+                class_command.execute(interaction)
+            }
+        })
+    }
+
+    private async checkPermissions(command: Command, interaction: CommandInteraction) {
+        for (const permission of command.permissions) {
+            if (interaction.memberPermissions.has(permission)) return true
+        }
+        return false
     }
 }
 

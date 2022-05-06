@@ -5,5 +5,6 @@ declare class EventHandler {
     constructor(client: DiscordClient);
     private loadEvents;
     private scanDir;
+    private createEvent;
 }
 export { EventHandler };

@@ -11,6 +11,13 @@ interface ToolConfig {
     create_commands?: boolean;
     test_guild?: string;
     debug?: boolean;
+    messages?: Messages
+}
+
+interface Messages {
+    command_not_found?: string;
+    command_error?: string;
+    invalid_permissions?: string;
 }
 
 class DiscordClient extends Client {
@@ -22,6 +29,7 @@ class DiscordClient extends Client {
     public create_commands: boolean;
     public test_guild: string;
     public debug: boolean;
+    public messages: Messages
 
     public command_handler: CommandHandler
 
@@ -34,6 +42,12 @@ class DiscordClient extends Client {
         this.create_commands = tools.create_commands;
         this.test_guild = tools.test_guild;
         this.debug = tools.debug || false;
+        this.messages = {
+            command_error: tools.messages.command_error || 'An error occured while executing this command.',
+            command_not_found: tools.messages.command_not_found || 'Command not found.',
+            invalid_permissions: tools.messages.invalid_permissions || 'You do not have the required permissions to execute this command.'
+        };
+
         this.loggers()
 
         this.command_handler = new CommandHandler(this)

@@ -1,11 +1,12 @@
 import { SlashCommandBuilder, SlashCommandSubcommandBuilder } from "@discordjs/builders"
-import { CommandInteraction } from "discord.js"
+import { CommandInteraction, PermissionResolvable } from "discord.js"
 import { DiscordClient } from ".."
 
 interface CommandOptions {
     name: string
     description: string,
     global?: boolean,
+    permissions?: PermissionResolvable[],
     metadata?: object
 }
 
@@ -16,12 +17,14 @@ export default class Command {
     public global: boolean
     public metadata: object
     public id: string
+    public permissions: PermissionResolvable[]
 
     constructor(options: CommandOptions) {
         this.name = options.name
         this.description = options.description
-        this.global = options.global
+        this.global = options.global || false
         this.metadata = options.metadata || {}
+        this.permissions = options.permissions || []
     }
 
     protected getSubCommand(): SlashCommandSubcommandBuilder {

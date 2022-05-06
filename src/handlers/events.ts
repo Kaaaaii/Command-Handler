@@ -23,8 +23,7 @@ class EventHandler {
     private async scanDir(dir: string) {
         var directory = readdirSync(join(require.main.path, dir))
         for (const dirfile of directory) {
-            var event: Event = new (await import(join(require.main.path, dir + '/' + dirfile))).default
-            this.client.on(event.event, (...args) => event.execute(...args))
+            this.createEvent(dir, dirfile)
         }
     }
 
